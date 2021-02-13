@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 
 import 'service/local_notification.dart';
+import 'service/location_permission.dart';
 import 'service/navigation.dart';
 
 /// servicesLocator
@@ -13,4 +14,5 @@ GetIt servicesLocator = GetIt.instance;
 void setupServiceLocator() {
   servicesLocator.registerLazySingleton(() => LocalNotificationService());
   servicesLocator.registerLazySingleton(() => NavigationService());
+  servicesLocator.registerLazySingleton(() => LocationPermissionService());
 }

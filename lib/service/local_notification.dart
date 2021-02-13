@@ -46,7 +46,7 @@ class LocalNotificationService {
     if (payload != null) {
       debugPrint('notification payload: $payload');
     }
-    _navigation.pushNamed(routeName: '/root');
+    _navigation.pushNamed(routeName: '/');
   }
 
   /// showNotification

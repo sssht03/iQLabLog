@@ -17,12 +17,13 @@ dependencies:
   # Google Fonts
   google_fonts: ^1.1.1
   # beacon
-  flutter_beacon:
-    git: https://github.com/alann-maulana/flutter_beacon
+  flutter_beacon: ^0.3.0
   # local notification
-  flutter_local_notifications: ^3.0.3
+  flutter_local_notifications: ^4.0.1
   # effective dart
   effective_dart: ^1.3.0
+  # location_permission
+  location_permissions: ^3.0.0+1
 
 dev_dependencies:
   flutter_test:

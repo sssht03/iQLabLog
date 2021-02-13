@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:stacked/stacked.dart';
 
+import '../../service/local_notification.dart';
+import '../../service_locator.dart';
+
 /// BeaconViewModel
 class BeaconViewModel extends BaseViewModel
     with
         // ignore: prefer_mixin
         WidgetsBindingObserver {
+  final _localNotification = servicesLocator<LocalNotificationService>();
+  // final _locationPermission = servicesLocator<LocationPermissionService>();
+
   /// streamController
   final StreamController streamController = StreamController();
   StreamSubscription<BluetoothState> _streamBluetooth;
@@ -32,16 +38,19 @@ class BeaconViewModel extends BaseViewModel
   bool get bluetoothEnabled => _bluetoothEnabled;
   bool _bluetoothEnabled = false;
 
+  String _debugMessage;
+  String get debugMessage => _debugMessage;
+
   /// initialize
   void initialize() {
     print('initialize');
+    _localNotification.initLocalNotification();
     WidgetsBinding.instance.addObserver(this);
     listeningState();
   }
 
   /// lister
   Future<void> listeningState() async {
-    print('Listening to bluetooth state');
     _streamBluetooth =
         flutterBeacon.bluetoothStateChanged().listen((state) async {
       print('BluetoothState = $state');
@@ -75,10 +84,10 @@ class BeaconViewModel extends BaseViewModel
 
   /// initScanBeacon
   void initScanBeacon() async {
-    print('init scan');
-    await flutterBeacon.initializeAndCheckScanning;
+    // await flutterBeacon.initializeScanning;
 
     await checkAllRequirements();
+
     if (!_authorizationStatusOk ||
         !_locationServiceEnabled ||
         !_bluetoothEnabled) {
@@ -87,6 +96,7 @@ class BeaconViewModel extends BaseViewModel
           'bluetoothEnabled=$_bluetoothEnabled');
       return;
     }
+
     final regions = <Region>[
       Region(
         identifier: '''Shuta's iPad''',
@@ -101,7 +111,7 @@ class BeaconViewModel extends BaseViewModel
       }
     }
 
-    _streamRanging = flutterBeacon.ranging(regions).listen((result) {
+    _streamRanging = flutterBeacon.ranging(regions).listen((result) async {
       if (result != null) {
         _regionBeacons[result.region] = result.beacons;
         _beacons.clear();
@@ -112,6 +122,11 @@ class BeaconViewModel extends BaseViewModel
           var uuid = _beacons[i].proximityUUID;
           if (regions[0].proximityUUID.contains(uuid)) {
             print('contain!');
+          }
+          if (_beacons[i].proximity == Proximity.immediate) {
+            print('immediate');
+            _debugMessage = 'immediate';
+            await _localNotification.showNotification('iQ Lab', '入退室を検知しました！');
           }
         }
         notifyListeners();

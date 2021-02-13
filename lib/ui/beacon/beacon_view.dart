@@ -85,7 +85,7 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
           ],
         ),
         body: model.beacons == null || model.beacons.isEmpty
-            ? Center(child: CircularProgressIndicator())
+            ? Center(child: Text(model.debugMessage))
             : Container(
                 child: Center(
                   child: Text('found'),
