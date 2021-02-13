@@ -41,12 +41,21 @@ class BeaconViewModel extends BaseViewModel
 
   /// scanning
   bool get scanning => _scanning;
-  bool _scanning = false;
-
   set scanning(bool e) {
-    _scanning = true;
+    _scanning = e;
     notifyListeners();
   }
+
+  bool _scanning = false;
+
+  /// onTap
+  bool get onTap => _onTap;
+  set onTap(bool e) {
+    _onTap = e;
+    notifyListeners();
+  }
+
+  bool _onTap = false;
 
   /// text
   String get text => _text;

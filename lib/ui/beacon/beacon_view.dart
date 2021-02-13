@@ -89,7 +89,7 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
         ),
         body: Container(
             padding: EdgeInsets.all(16.0),
-            child: model.scanning
+            child: model.scanning && model.onTap
                 ? Center(
                     child: CircularProgressIndicator(),
                   )
@@ -137,7 +137,7 @@ class _ScanButton extends ViewModelWidget<BeaconViewModel> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           color: Theme.of(context).primaryColor,
-          onPressed: () => {model.initScanBeacon, model.scanning = true},
+          onPressed: () => {model.initScanBeacon, model.onTap = true},
         ));
   }
 }
