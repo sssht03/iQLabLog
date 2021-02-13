@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../service/local_notification.dart';
+import '../../service/location_permission.dart';
 import '../../service_locator.dart';
 
 /// BeaconViewModel
@@ -13,7 +15,6 @@ class BeaconViewModel extends BaseViewModel
         // ignore: prefer_mixin
         WidgetsBindingObserver {
   final _localNotification = servicesLocator<LocalNotificationService>();
-  // final _locationPermission = servicesLocator<LocationPermissionService>();
 
   /// streamController
   final StreamController streamController = StreamController();
@@ -38,22 +39,27 @@ class BeaconViewModel extends BaseViewModel
   bool get bluetoothEnabled => _bluetoothEnabled;
   bool _bluetoothEnabled = false;
 
-  String _debugMessage;
-  String get debugMessage => _debugMessage;
+  /// text
+  String get text => _text;
+  String _text = '';
+
+  /// handleText
+  void handleText(String e) {
+    _text = e;
+    notifyListeners();
+  }
 
   /// initialize
   void initialize() {
     print('initialize');
     _localNotification.initLocalNotification();
     WidgetsBinding.instance.addObserver(this);
-    listeningState();
   }
 
   /// lister
   Future<void> listeningState() async {
     _streamBluetooth =
         flutterBeacon.bluetoothStateChanged().listen((state) async {
-      print('BluetoothState = $state');
       streamController.add(state);
 
       if (state == BluetoothState.stateOn) {
@@ -71,7 +77,7 @@ class BeaconViewModel extends BaseViewModel
     final bluetoothEnabled = bluetoothState == BluetoothState.stateOn;
     final authorizationStatus = await flutterBeacon.authorizationStatus;
     final authorizationStatusOk =
-        authorizationStatus == AuthorizationStatus.allowed ||
+        authorizationStatus == AuthorizationStatus.whenInUse ||
             authorizationStatus == AuthorizationStatus.always;
     final locationServiceEnabled =
         await flutterBeacon.checkLocationServicesIfEnabled;
@@ -82,10 +88,13 @@ class BeaconViewModel extends BaseViewModel
     notifyListeners();
   }
 
+  /// requestAuthorization
+  Future<void> requestAuthorization() async {
+    await flutterBeacon.requestAuthorization;
+  }
+
   /// initScanBeacon
   void initScanBeacon() async {
-    // await flutterBeacon.initializeScanning;
-
     await checkAllRequirements();
 
     if (!_authorizationStatusOk ||
@@ -117,15 +126,14 @@ class BeaconViewModel extends BaseViewModel
         _beacons.clear();
         _regionBeacons.values.forEach(_beacons.addAll);
         _beacons.sort(_compareParameters);
-        print('beacons: $_beacons');
+        print(result);
         for (var i = 0; i < _beacons.length; i++) {
           var uuid = _beacons[i].proximityUUID;
-          if (regions[0].proximityUUID.contains(uuid)) {
-            print('contain!');
-          }
-          if (_beacons[i].proximity == Proximity.immediate) {
-            print('immediate');
-            _debugMessage = 'immediate';
+          if (regions[0].proximityUUID.contains(uuid) &&
+              _beacons[i].proximity == Proximity.immediate &&
+              _beacons[i].accuracy < 0.15) {
+            await pauseScanBeacon();
+            _streamRanging = null;
             await _localNotification.showNotification('iQ Lab', '入退室を検知しました！');
           }
         }
@@ -138,22 +146,20 @@ class BeaconViewModel extends BaseViewModel
   void pauseScanBeacon() async {
     _streamRanging?.pause();
     if (_beacons.isNotEmpty) {
-      (_beacons.clear);
+      print('clear');
+      _beacons.clear();
       notifyListeners();
     }
   }
 
   int _compareParameters(Beacon a, Beacon b) {
     var compare = a.proximityUUID.compareTo(b.proximityUUID);
-
     if (compare == 0) {
       compare = a.major.compareTo(b.major);
     }
-
     if (compare == 0) {
       compare = a.minor.compareTo(b.minor);
     }
-
     return compare;
   }
 

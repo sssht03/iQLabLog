@@ -24,7 +24,7 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
   Widget build(BuildContext context, BeaconViewModel model) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter Beacon'),
+          title: const Text('Lab Log'),
           centerTitle: false,
           actions: <Widget>[
             if (!model.authorizationStatusOk)
@@ -32,7 +32,7 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
                   icon: Icon(Icons.portable_wifi_off),
                   color: Colors.red,
                   onPressed: () async {
-                    await flutterBeacon.requestAuthorization;
+                    model.requestAuthorization();
                   }),
             if (!model.locationServiceEnabled)
               IconButton(
@@ -84,12 +84,49 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
             ),
           ],
         ),
-        body: model.beacons == null || model.beacons.isEmpty
-            ? Center(child: Text(model.debugMessage))
-            : Container(
-                child: Center(
-                  child: Text('found'),
-                ),
-              ));
+        body: Container(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            children: [_TextInput(), SizedBox(height: 36.0), _ScanButton()],
+          ),
+        ));
+  }
+}
+
+/// _TextInput
+class _TextInput extends ViewModelWidget<BeaconViewModel> {
+  @override
+  Widget build(BuildContext context, BeaconViewModel model) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 56.0),
+      child: TextFormField(
+        decoration: InputDecoration(
+          labelText: '名前',
+          labelStyle: TextStyle(color: Color(0xFFB5B5B5)),
+          border: OutlineInputBorder(),
+        ),
+        onChanged: model.handleText,
+      ),
+    );
+  }
+}
+
+/// _ScanButton
+class _ScanButton extends ViewModelWidget<BeaconViewModel> {
+  @override
+  Widget build(BuildContext context, BeaconViewModel model) {
+    return Container(
+        width: 150,
+        height: 50,
+        child: RaisedButton(
+          elevation: 5,
+          shape: StadiumBorder(),
+          child: Text(
+            'スキャンする',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          color: Theme.of(context).primaryColor,
+          onPressed: model.initScanBeacon,
+        ));
   }
 }
