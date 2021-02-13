@@ -98,7 +98,12 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
                       SizedBox(height: 18.0),
                       _TextInput(),
                       SizedBox(height: 36.0),
-                      _ScanButton()
+                      _ScanButton(),
+                      SizedBox(height: 36.0),
+                      _DBData(),
+                      RaisedButton(onPressed: () {
+                        model.upDateLogData(model.username);
+                      })
                     ],
                   )));
   }
@@ -139,5 +144,15 @@ class _ScanButton extends ViewModelWidget<BeaconViewModel> {
           color: Theme.of(context).primaryColor,
           onPressed: () => {model.initScanBeacon, model.onTap = true},
         ));
+  }
+}
+
+/// DBData
+class _DBData extends ViewModelWidget<BeaconViewModel> {
+  @override
+  Widget build(BuildContext context, BeaconViewModel model) {
+    return Container(
+      child: Text(model.userData.toString()),
+    );
   }
 }

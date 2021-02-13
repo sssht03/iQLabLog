@@ -1,12 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../service/local_notification.dart';
-import '../../service/location_permission.dart';
+import '../../service/realtime_database.dart';
 import '../../service_locator.dart';
 
 /// BeaconViewModel
@@ -15,6 +14,7 @@ class BeaconViewModel extends BaseViewModel
         // ignore: prefer_mixin
         WidgetsBindingObserver {
   final _localNotification = servicesLocator<LocalNotificationService>();
+  final _rdb = servicesLocator<RDBService>();
 
   /// streamController
   final StreamController streamController = StreamController();
@@ -58,20 +58,30 @@ class BeaconViewModel extends BaseViewModel
   bool _onTap = false;
 
   /// text
-  String get text => _text;
-  String _text = '';
+  String get username => _username;
+  String _username = '';
+
+  /// userData
+  dynamic get userData => _userData;
+  var _userData;
 
   /// handleText
   void handleText(String e) {
-    _text = e;
+    _username = e;
     notifyListeners();
   }
 
+  /// upDateLogData
+  void upDateLogData(String username) => _rdb.upDateLogData(username);
+
   /// initialize
-  void initialize() {
+  void initialize() async {
     print('initialize');
     _localNotification.initLocalNotification();
     WidgetsBinding.instance.addObserver(this);
+    _userData = await _rdb.getUserData();
+    print(_userData);
+    notifyListeners();
   }
 
   /// lister

@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:iQLabLog/service/realtime_database.dart';
 import 'service/dialog.dart';
 
 import 'service/local_notification.dart';
@@ -17,4 +18,5 @@ void setupServiceLocator() {
   servicesLocator.registerLazySingleton(() => NavigationService());
   servicesLocator.registerLazySingleton(() => LocationPermissionService());
   servicesLocator.registerLazySingleton(() => DialogService());
+  servicesLocator.registerLazySingleton(() => RDBService());
 }
