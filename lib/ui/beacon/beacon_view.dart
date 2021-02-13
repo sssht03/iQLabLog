@@ -24,7 +24,10 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
   Widget build(BuildContext context, BeaconViewModel model) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Lab Log'),
+          title: const Text(
+            'iQ Lab Log',
+            style: TextStyle(color: Color(0xff434A56)),
+          ),
           centerTitle: false,
           actions: <Widget>[
             if (!model.authorizationStatusOk)
@@ -85,11 +88,19 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
           ],
         ),
         body: Container(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            children: [_TextInput(), SizedBox(height: 36.0), _ScanButton()],
-          ),
-        ));
+            padding: EdgeInsets.all(16.0),
+            child: model.scanning
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : Column(
+                    children: [
+                      SizedBox(height: 18.0),
+                      _TextInput(),
+                      SizedBox(height: 36.0),
+                      _ScanButton()
+                    ],
+                  )));
   }
 }
 
@@ -126,7 +137,7 @@ class _ScanButton extends ViewModelWidget<BeaconViewModel> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           color: Theme.of(context).primaryColor,
-          onPressed: model.initScanBeacon,
+          onPressed: () => {model.initScanBeacon, model.scanning = true},
         ));
   }
 }

@@ -19,9 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appTheme = ThemeData(
-      primaryColor: Colors.black,
-      accentColor: Colors.black38,
-      backgroundColor: Color(0xffF2F2F2),
+      primaryColor: Color(0xff3EC9B5),
       textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
     );
     return MaterialApp(

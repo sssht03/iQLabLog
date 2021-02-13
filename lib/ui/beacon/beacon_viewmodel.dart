@@ -39,6 +39,15 @@ class BeaconViewModel extends BaseViewModel
   bool get bluetoothEnabled => _bluetoothEnabled;
   bool _bluetoothEnabled = false;
 
+  /// scanning
+  bool get scanning => _scanning;
+  bool _scanning = false;
+
+  set scanning(bool e) {
+    _scanning = true;
+    notifyListeners();
+  }
+
   /// text
   String get text => _text;
   String _text = '';
@@ -95,6 +104,7 @@ class BeaconViewModel extends BaseViewModel
 
   /// initScanBeacon
   void initScanBeacon() async {
+    _scanning = true;
     await checkAllRequirements();
 
     if (!_authorizationStatusOk ||
@@ -135,6 +145,7 @@ class BeaconViewModel extends BaseViewModel
             await pauseScanBeacon();
             _streamRanging = null;
             await _localNotification.showNotification('iQ Lab', '入退室を検知しました！');
+            _scanning = false;
           }
         }
         notifyListeners();
