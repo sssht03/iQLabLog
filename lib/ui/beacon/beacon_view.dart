@@ -91,39 +91,28 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
             padding: EdgeInsets.all(16.0),
             child: model.scanning && model.onTap
                 ? Center(
-                    child: CircularProgressIndicator(),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircularProgressIndicator(),
+                        SizedBox(height: 36.0),
+                        _CancelButton()
+                      ],
+                    ),
                   )
                 : Column(
                     children: [
                       SizedBox(height: 18.0),
-                      _TextInput(),
                       SizedBox(height: 36.0),
                       _ScanButton(),
                       SizedBox(height: 36.0),
-                      _DBData(),
-                      RaisedButton(onPressed: () {
-                        model.upDateLogData(model.username);
-                      })
+                      RaisedButton(
+                          child: Text('submit'),
+                          onPressed: () async {
+                            await model.submitData();
+                          }),
                     ],
                   )));
-  }
-}
-
-/// _TextInput
-class _TextInput extends ViewModelWidget<BeaconViewModel> {
-  @override
-  Widget build(BuildContext context, BeaconViewModel model) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 56.0),
-      child: TextFormField(
-        decoration: InputDecoration(
-          labelText: '名前',
-          labelStyle: TextStyle(color: Color(0xFFB5B5B5)),
-          border: OutlineInputBorder(),
-        ),
-        onChanged: model.handleText,
-      ),
-    );
   }
 }
 
@@ -147,12 +136,26 @@ class _ScanButton extends ViewModelWidget<BeaconViewModel> {
   }
 }
 
-/// DBData
-class _DBData extends ViewModelWidget<BeaconViewModel> {
+/// _CancelButton
+class _CancelButton extends ViewModelWidget<BeaconViewModel> {
   @override
   Widget build(BuildContext context, BeaconViewModel model) {
     return Container(
-      child: Text(model.userData.toString()),
-    );
+        width: 150,
+        height: 50,
+        child: RaisedButton(
+          elevation: 5,
+          shape: StadiumBorder(),
+          child: Text(
+            'スキャンをやめる',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          // color: Theme.of(context).primaryColor,
+          onPressed: () async {
+            await model.pauseScanBeacon();
+            model.scanning = false;
+            model.onTap = false;
+          },
+        ));
   }
 }

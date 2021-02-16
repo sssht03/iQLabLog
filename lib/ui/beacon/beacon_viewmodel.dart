@@ -2,10 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
+import 'package:iQLabLog/model/logdata.dart';
+import 'package:iQLabLog/service/sheet.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../service/local_notification.dart';
-import '../../service/realtime_database.dart';
 import '../../service_locator.dart';
 
 /// BeaconViewModel
@@ -14,7 +15,7 @@ class BeaconViewModel extends BaseViewModel
         // ignore: prefer_mixin
         WidgetsBindingObserver {
   final _localNotification = servicesLocator<LocalNotificationService>();
-  final _rdb = servicesLocator<RDBService>();
+  final _sheet = servicesLocator<SheetService>();
 
   /// streamController
   final StreamController streamController = StreamController();
@@ -57,30 +58,21 @@ class BeaconViewModel extends BaseViewModel
 
   bool _onTap = false;
 
-  /// text
-  String get username => _username;
-  String _username = '';
-
   /// userData
   dynamic get userData => _userData;
   var _userData;
 
   /// handleText
   void handleText(String e) {
-    _username = e;
+    // _username = e;
     notifyListeners();
   }
-
-  /// upDateLogData
-  void upDateLogData(String username) => _rdb.upDateLogData(username);
 
   /// initialize
   void initialize() async {
     print('initialize');
     _localNotification.initLocalNotification();
     WidgetsBinding.instance.addObserver(this);
-    _userData = await _rdb.getUserData();
-    print(_userData);
     notifyListeners();
   }
 
@@ -123,6 +115,13 @@ class BeaconViewModel extends BaseViewModel
 
   /// initScanBeacon
   void initScanBeacon() async {
+    final regions = <Region>[
+      Region(
+        identifier: '''Shuta's iPad''',
+        proximityUUID: '48534442-4C45-4144-80C0-1800FFFFFFFF',
+      ),
+    ];
+
     _scanning = true;
     await checkAllRequirements();
 
@@ -134,13 +133,6 @@ class BeaconViewModel extends BaseViewModel
           'bluetoothEnabled=$_bluetoothEnabled');
       return;
     }
-
-    final regions = <Region>[
-      Region(
-        identifier: '''Shuta's iPad''',
-        proximityUUID: '48534442-4C45-4144-80C0-1800FFFFFFFF',
-      ),
-    ];
 
     if (_streamRanging != null) {
       if (_streamRanging.isPaused) {
@@ -191,6 +183,15 @@ class BeaconViewModel extends BaseViewModel
       compare = a.minor.compareTo(b.minor);
     }
     return compare;
+  }
+
+  // ignore: lines_longer_than_80_chars
+  final _logdata = LogData(
+      name: 'testname', room: '201', timestamp: DateTime.now().toString());
+
+  /// submitData
+  void submitData() async {
+    await _sheet.submitDataToSheet(_logdata, print);
   }
 
   @override

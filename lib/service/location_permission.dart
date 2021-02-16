@@ -23,10 +23,10 @@ class LocationPermissionService {
     await LocationPermissions().openAppSettings();
   }
 
-  /// requestLocationAlwaysPermission
-  Future<void> requestLocationAlwaysPermission() async {
-    var title = '位置情報の許可';
-    var body = 'アプリがバックグラウンドの状態でもビーコンの検知ができるように, 位置情報を「常に許可」へ変更してください';
-    _dialog.showAlertDialog(title, body, openSetting());
-  }
+  // /// requestLocationAlwaysPermission
+  // Future<void> requestLocationAlwaysPermission() async {
+  //   var title = '位置情報の許可';
+  //   var body = 'アプリがバックグラウンドの状態でもビーコンの検知ができるように, 位置情報を「常に許可」へ変更してください';
+  //   _dialog.showAlertDialog(title, body, openSetting());
+  // }
 }

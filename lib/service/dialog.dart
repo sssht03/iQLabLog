@@ -8,7 +8,7 @@ class DialogService {
   final _navigation = servicesLocator<NavigationService>();
 
   /// ShowAlertDialog
-  void showAlertDialog(String title, String body, dynamic okAction) {
+  void showAlertDialog(String title, String body, Function okAction) {
     showDialog(
       context: _navigation.currentContext,
       builder: (_) {
@@ -17,12 +17,18 @@ class DialogService {
           content: Text(body),
           actions: <Widget>[
             FlatButton(
-              child: Text("Cancel"),
+              child: Text(
+                "Cancel",
+                style: TextStyle(color: Colors.redAccent),
+              ),
               onPressed: () => Navigator.pop(_navigation.currentContext),
             ),
             FlatButton(
-              child: Text("OK"),
-              onPressed: () => {okAction},
+              child: Text(
+                "OK",
+                style: TextStyle(color: Colors.grey),
+              ),
+              onPressed: okAction,
             ),
           ],
         );

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'service/navigation.dart';
 
 import 'service_locator.dart';
 import 'ui/beacon/beacon_view.dart';
+import 'ui/name_input/name_input.view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,7 @@ void main() async {
 
 /// MyApp
 class MyApp extends StatelessWidget {
+  final _navigation = servicesLocator<NavigationService>();
   @override
   Widget build(BuildContext context) {
     final appTheme = ThemeData(
@@ -26,9 +29,11 @@ class MyApp extends StatelessWidget {
       title: 'iQ Lab Log',
       debugShowCheckedModeBanner: false,
       theme: appTheme,
+      navigatorKey: _navigation.navigatorKey,
       initialRoute: '/',
       routes: {
-        '/': (context) => BeaconView(),
+        '/': (context) => NameInputView(),
+        '/beacon': (context) => BeaconView(),
       },
     );
   }
