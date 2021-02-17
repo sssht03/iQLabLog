@@ -67,7 +67,6 @@ class BeaconViewModel extends BaseViewModel
   /// initialize
   void initialize() async {
     print('initialize');
-    await pauseScanBeacon();
     listeningState();
     _localNotification.initLocalNotification();
     WidgetsBinding.instance.addObserver(this);
@@ -153,19 +152,21 @@ class BeaconViewModel extends BaseViewModel
         _beacons.clear();
         _regionBeacons.values.forEach(_beacons.addAll);
         _beacons.sort(_compareParameters);
+        notifyListeners();
         print(result);
-        var roomId;
+        var _roomId;
         var uuid = _beacons[0].proximityUUID;
         if (regions[0].proximityUUID.contains(uuid) &&
             _beacons[0].proximity == Proximity.immediate &&
             _beacons[0].accuracy < 0.15) {
-          roomId = 0;
+          _roomId = 0;
         } else if (regions[1].proximityUUID.contains(uuid) &&
             _beacons[0].proximity == Proximity.immediate) {
-          roomId = 1;
+          _roomId = 1;
         }
-        if (roomId == 0 || roomId == 1) {
-          await processAfterScanning(roomId);
+        if (_roomId == 0 || _roomId == 1) {
+          await pauseScanBeacon();
+          await processAfterScanning(_roomId);
         }
       }
     });
@@ -173,7 +174,6 @@ class BeaconViewModel extends BaseViewModel
 
   /// processAfterScanning
   Future<void> processAfterScanning(num roomId) async {
-    await pauseScanBeacon();
     _streamRanging = null;
     submitData(roomId);
     await _localNotification.showNotification('iQ Lab', '入退室を検知しました！');
@@ -182,7 +182,7 @@ class BeaconViewModel extends BaseViewModel
   }
 
   /// pauseScanBeacon
-  void pauseScanBeacon() async {
+  Future<void> pauseScanBeacon() async {
     _streamRanging?.pause();
     if (_beacons.isNotEmpty) {
       _beacons.clear();
