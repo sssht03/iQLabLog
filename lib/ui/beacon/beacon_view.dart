@@ -55,11 +55,14 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
                     return IconButton(
                       icon: Icon(Icons.bluetooth_connected),
                       onPressed: () {},
-                      color: Colors.lightBlueAccent,
+                      color: Colors.blue,
                     );
                   } else if (state == BluetoothState.stateOff) {
                     return IconButton(
-                      icon: Icon(Icons.bluetooth),
+                      icon: Icon(
+                        Icons.bluetooth,
+                        color: Colors.black,
+                      ),
                       onPressed: () async {
                         if (Platform.isAndroid) {
                           try {
@@ -89,31 +92,21 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
         ),
         body: Container(
             padding: EdgeInsets.all(16.0),
-            child: model.scanning && model.onTap
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        CircularProgressIndicator(),
-                        SizedBox(height: 36.0),
-                        _CancelButton()
-                      ],
-                    ),
-                  )
-                : Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _ScanButton(),
-                        SizedBox(height: 36.0),
-                        // RaisedButton(
-                        //     child: Text('submit'),
-                        //     onPressed: () async {
-                        //       await model.submitData();
-                        //     }),
-                      ],
-                    ),
-                  )));
+            child: Center(
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 56.0),
+                  _RecordButton(),
+                  SizedBox(height: 36.0),
+                  _ScanButton(),
+                  SizedBox(height: 36.0),
+                  _CancelButton(),
+                  SizedBox(height: 36.0),
+                  if (model.scanning && model.onTap) CircularProgressIndicator()
+                ],
+              ),
+            )));
   }
 }
 
@@ -137,6 +130,59 @@ class _ScanButton extends ViewModelWidget<BeaconViewModel> {
   }
 }
 
+/// _RecordButton
+class _RecordButton extends ViewModelWidget<BeaconViewModel> {
+  @override
+  Widget build(BuildContext context, BeaconViewModel model) {
+    return Container(
+      child: Column(
+        children: [
+          if (model.room != null)
+            Text(
+              'room',
+              style: TextStyle(fontSize: 24.0, color: Colors.black54),
+            ),
+          SizedBox(height: 8.0),
+          (model.room == null)
+              ? Text(
+                  'Beacon \nNot Found',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 40.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87),
+                )
+              : Text(
+                  model.room,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 56.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87),
+                ),
+          SizedBox(height: 36.0),
+          Container(
+              width: 150,
+              height: 50,
+              child: RaisedButton(
+                elevation: 5,
+                shape: StadiumBorder(),
+                child: Text(
+                  '記録送信',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                color: Theme.of(context).primaryColor,
+                onPressed: () async {
+                  await model.submitData();
+                },
+              ))
+        ],
+      ),
+    );
+  }
+}
+
 /// _CancelButton
 class _CancelButton extends ViewModelWidget<BeaconViewModel> {
   @override
@@ -151,7 +197,6 @@ class _CancelButton extends ViewModelWidget<BeaconViewModel> {
             'スキャンをやめる',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
-          // color: Theme.of(context).primaryColor,
           onPressed: () async {
             await model.pauseScanBeacon();
             model.scanning = false;

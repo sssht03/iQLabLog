@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iQLabLog/ui/splash/splash_view.dart';
-import 'service/navigation.dart';
 
+import 'service/navigation.dart';
 import 'service_locator.dart';
 import 'ui/beacon/beacon_view.dart';
 import 'ui/name_input/name_input.view.dart';
+import 'ui/splash/splash_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +24,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final appTheme = ThemeData(
       primaryColor: Color(0xff3EC9B5),
-      textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
+      textTheme: GoogleFonts.notoSansTextTheme(Theme.of(context).textTheme)
+      // GoogleFonts.robotoTextTheme(Theme.of(context).textTheme)
+      ,
     );
     return MaterialApp(
       title: 'iQ Lab Log',

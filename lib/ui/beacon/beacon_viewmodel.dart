@@ -5,6 +5,7 @@ import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../model/logdata.dart';
+import '../../service/flushbar.dart';
 import '../../service/local_notification.dart';
 import '../../service/local_storage.dart';
 import '../../service/sheet.dart';
@@ -18,6 +19,7 @@ class BeaconViewModel extends BaseViewModel
   final _localNotification = servicesLocator<LocalNotificationService>();
   final _sheet = servicesLocator<SheetService>();
   final _localStorage = servicesLocator<LocalStorageService>();
+  final _flushbar = servicesLocator<FlushBarService>();
 
   /// streamController
   final StreamController streamController = StreamController();
@@ -64,6 +66,10 @@ class BeaconViewModel extends BaseViewModel
   String get name => _name;
   String _name;
 
+  /// room
+  String get room => _room;
+  String _room;
+
   /// initialize
   void initialize() async {
     print('initialize');
@@ -82,9 +88,7 @@ class BeaconViewModel extends BaseViewModel
         flutterBeacon.bluetoothStateChanged().listen((state) async {
       streamController.add(state);
 
-      if (state == BluetoothState.stateOn) {
-        initScanBeacon();
-      } else if (state == BluetoothState.stateOff) {
+      if (state == BluetoothState.stateOff) {
         await pauseScanBeacon();
         await checkAllRequirements();
       }
@@ -115,6 +119,11 @@ class BeaconViewModel extends BaseViewModel
 
   /// initScanBeacon
   void initScanBeacon() async {
+    _beacons.clear();
+    _streamRanging = null;
+    _scanning = true;
+    notifyListeners();
+
     final regions = <Region>[
       Region(
         identifier: '''Shuta's iPad''',
@@ -125,8 +134,6 @@ class BeaconViewModel extends BaseViewModel
         proximityUUID: '5F7A409F-3D68-451E-A116-601D68E6D92D',
       ),
     ];
-
-    _scanning = true;
 
     await checkAllRequirements();
 
@@ -147,43 +154,37 @@ class BeaconViewModel extends BaseViewModel
     }
 
     _streamRanging = flutterBeacon.ranging(regions).listen((result) async {
+      _beacons.clear();
+      notifyListeners();
       if (result != null) {
         _regionBeacons[result.region] = result.beacons;
-        _beacons.clear();
         _regionBeacons.values.forEach(_beacons.addAll);
-        _beacons.sort(_compareParameters);
         notifyListeners();
-        print(result);
-        var _roomId;
+        _beacons.sort(_compareParameters);
+        print(_beacons);
         var uuid = _beacons[0].proximityUUID;
-        if (regions[0].proximityUUID.contains(uuid) &&
-            _beacons[0].proximity == Proximity.immediate &&
-            _beacons[0].accuracy < 0.15) {
-          _roomId = 0;
-        } else if (regions[1].proximityUUID.contains(uuid) &&
-            _beacons[0].proximity == Proximity.immediate) {
-          _roomId = 1;
-        }
-        if (_roomId == 0 || _roomId == 1) {
-          await pauseScanBeacon();
-          await processAfterScanning(_roomId);
+        for (var i = 0; i < _beacons.length; i++) {
+          if (regions[0].proximityUUID.contains(uuid) &&
+              _beacons[i].proximity == Proximity.immediate &&
+              _beacons[i].accuracy < 0.15) {
+            _room = '202';
+            await pauseScanBeacon();
+          } else if (regions[1].proximityUUID.contains(uuid) &&
+              (_beacons[i].proximity == Proximity.immediate ||
+                  _beacons[i].proximity == Proximity.near) &&
+              _beacons[i].accuracy < 2.0) {
+            _room = '201';
+            await pauseScanBeacon();
+          }
         }
       }
     });
   }
 
-  /// processAfterScanning
-  Future<void> processAfterScanning(num roomId) async {
-    _streamRanging = null;
-    submitData(roomId);
-    await _localNotification.showNotification('iQ Lab', '入退室を検知しました！');
-    _scanning = false;
-    notifyListeners();
-  }
-
   /// pauseScanBeacon
   Future<void> pauseScanBeacon() async {
-    _streamRanging?.pause();
+    _streamRanging?.cancel();
+    _scanning = false;
     if (_beacons.isNotEmpty) {
       _beacons.clear();
       notifyListeners();
@@ -202,16 +203,14 @@ class BeaconViewModel extends BaseViewModel
   }
 
   /// submitData
-  void submitData(num roomId) async {
-    var room;
-    if (roomId == 0) {
-      room = '202';
+  void submitData() async {
+    if (room == null) {
+      _flushbar.showFlushbar('スキャンされていません', Colors.redAccent);
     } else {
-      room = '201';
+      final _logdata = LogData(
+          name: '$name', room: '$room', timestamp: DateTime.now().toString());
+      await _sheet.submitDataToSheet(_logdata, print);
     }
-    final _logdata = LogData(
-        name: '$name', room: '$room', timestamp: DateTime.now().toString());
-    await _sheet.submitDataToSheet(_logdata, print);
   }
 
   @override

@@ -28,6 +28,10 @@ dependencies:
   http: ^0.12.2
   # shared_preference
   shared_preferences: ^0.5.12+4
+  # flushbar
+  flushbar: ^1.10.4
+  # easy loading
+  flutter_easyloading: ^2.2.2
 
 dev_dependencies:
   flutter_test:

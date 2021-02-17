@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:stacked/stacked.dart';
 
 import 'splash_viewmodel.dart';
@@ -19,13 +20,9 @@ class _SplashScreen extends ViewModelWidget<SplashViewModel> {
   @override
   Widget build(BuildContext context, SplashViewModel model) {
     return Container(
-      color: Theme.of(context).primaryColor,
-      child: Center(
-          child: Text(
-        'iQ Lab Log',
-        style: TextStyle(
-            color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 36.0),
-      )),
-    );
+        color: Theme.of(context).primaryColor,
+        child: Center(
+            child:
+                Text('iQ Lab Log', style: GoogleFonts.modak(fontSize: 56.0))));
   }
 }
