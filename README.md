@@ -1,4 +1,4 @@
-# labAccessDetector
+# iQLabLog
 
 A new Flutter project.
 
