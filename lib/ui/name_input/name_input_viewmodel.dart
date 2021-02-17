@@ -1,6 +1,7 @@
 import 'package:stacked/stacked.dart';
 
 import '../../service/dialog.dart';
+import '../../service/local_storage.dart';
 import '../../service/navigation.dart';
 import '../../service_locator.dart';
 
@@ -8,11 +9,7 @@ import '../../service_locator.dart';
 class NameInputViewModel extends BaseViewModel {
   final _navigation = servicesLocator<NavigationService>();
   final _dialog = servicesLocator<DialogService>();
-
-  /// transitionToBeaconView
-  void transitionToBeaconView() {
-    _navigation.pushNamedAndRemoveUntil(routeName: '/beacon');
-  }
+  final _lcoalStorage = servicesLocator<LocalStorageService>();
 
   /// text
   String get text => _text;
@@ -26,7 +23,11 @@ class NameInputViewModel extends BaseViewModel {
 
   /// showCheckDialog
   void showCheckDialog() async {
-    _dialog.showAlertDialog(
-        '確認: $text', '変更できないよ\n機能作るのサボりました', transitionToBeaconView);
+    await _dialog.showAlertDialog('確認: $text', '変更できないよ\n機能作るのサボりました',
+        () async {
+      print(text);
+      await _lcoalStorage.storeUserName(text);
+      _navigation.pushNamedAndRemoveUntil(routeName: '/beacon');
+    });
   }
 }

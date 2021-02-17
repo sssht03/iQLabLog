@@ -100,18 +100,19 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
                       ],
                     ),
                   )
-                : Column(
-                    children: [
-                      SizedBox(height: 18.0),
-                      SizedBox(height: 36.0),
-                      _ScanButton(),
-                      SizedBox(height: 36.0),
-                      RaisedButton(
-                          child: Text('submit'),
-                          onPressed: () async {
-                            await model.submitData();
-                          }),
-                    ],
+                : Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _ScanButton(),
+                        SizedBox(height: 36.0),
+                        // RaisedButton(
+                        //     child: Text('submit'),
+                        //     onPressed: () async {
+                        //       await model.submitData();
+                        //     }),
+                      ],
+                    ),
                   )));
   }
 }
@@ -131,7 +132,7 @@ class _ScanButton extends ViewModelWidget<BeaconViewModel> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           color: Theme.of(context).primaryColor,
-          onPressed: () => {model.initScanBeacon, model.onTap = true},
+          onPressed: () => {model.initScanBeacon(), model.onTap = true},
         ));
   }
 }

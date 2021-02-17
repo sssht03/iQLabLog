@@ -2,11 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
-import 'package:iQLabLog/model/logdata.dart';
-import 'package:iQLabLog/service/sheet.dart';
 import 'package:stacked/stacked.dart';
 
+import '../../model/logdata.dart';
 import '../../service/local_notification.dart';
+import '../../service/local_storage.dart';
+import '../../service/sheet.dart';
 import '../../service_locator.dart';
 
 /// BeaconViewModel
@@ -16,6 +17,7 @@ class BeaconViewModel extends BaseViewModel
         WidgetsBindingObserver {
   final _localNotification = servicesLocator<LocalNotificationService>();
   final _sheet = servicesLocator<SheetService>();
+  final _localStorage = servicesLocator<LocalStorageService>();
 
   /// streamController
   final StreamController streamController = StreamController();
@@ -58,26 +60,25 @@ class BeaconViewModel extends BaseViewModel
 
   bool _onTap = false;
 
-  /// userData
-  dynamic get userData => _userData;
-  var _userData;
-
-  /// handleText
-  void handleText(String e) {
-    // _username = e;
-    notifyListeners();
-  }
+  /// name
+  String get name => _name;
+  String _name;
 
   /// initialize
   void initialize() async {
     print('initialize');
+    await pauseScanBeacon();
+    listeningState();
     _localNotification.initLocalNotification();
     WidgetsBinding.instance.addObserver(this);
+    _name = await _localStorage.getUserName();
     notifyListeners();
   }
 
   /// lister
   Future<void> listeningState() async {
+    _beacons.clear();
+    notifyListeners();
     _streamBluetooth =
         flutterBeacon.bluetoothStateChanged().listen((state) async {
       streamController.add(state);
@@ -120,9 +121,14 @@ class BeaconViewModel extends BaseViewModel
         identifier: '''Shuta's iPad''',
         proximityUUID: '48534442-4C45-4144-80C0-1800FFFFFFFF',
       ),
+      Region(
+        identifier: '''ibeacon201''',
+        proximityUUID: '5F7A409F-3D68-451E-A116-601D68E6D92D',
+      ),
     ];
 
     _scanning = true;
+
     await checkAllRequirements();
 
     if (!_authorizationStatusOk ||
@@ -148,27 +154,37 @@ class BeaconViewModel extends BaseViewModel
         _regionBeacons.values.forEach(_beacons.addAll);
         _beacons.sort(_compareParameters);
         print(result);
-        for (var i = 0; i < _beacons.length; i++) {
-          var uuid = _beacons[i].proximityUUID;
-          if (regions[0].proximityUUID.contains(uuid) &&
-              _beacons[i].proximity == Proximity.immediate &&
-              _beacons[i].accuracy < 0.15) {
-            await pauseScanBeacon();
-            _streamRanging = null;
-            await _localNotification.showNotification('iQ Lab', '入退室を検知しました！');
-            _scanning = false;
-          }
+        var roomId;
+        var uuid = _beacons[0].proximityUUID;
+        if (regions[0].proximityUUID.contains(uuid) &&
+            _beacons[0].proximity == Proximity.immediate &&
+            _beacons[0].accuracy < 0.15) {
+          roomId = 0;
+        } else if (regions[1].proximityUUID.contains(uuid) &&
+            _beacons[0].proximity == Proximity.immediate) {
+          roomId = 1;
         }
-        notifyListeners();
+        if (roomId == 0 || roomId == 1) {
+          await processAfterScanning(roomId);
+        }
       }
     });
+  }
+
+  /// processAfterScanning
+  Future<void> processAfterScanning(num roomId) async {
+    await pauseScanBeacon();
+    _streamRanging = null;
+    submitData(roomId);
+    await _localNotification.showNotification('iQ Lab', '入退室を検知しました！');
+    _scanning = false;
+    notifyListeners();
   }
 
   /// pauseScanBeacon
   void pauseScanBeacon() async {
     _streamRanging?.pause();
     if (_beacons.isNotEmpty) {
-      print('clear');
       _beacons.clear();
       notifyListeners();
     }
@@ -185,12 +201,16 @@ class BeaconViewModel extends BaseViewModel
     return compare;
   }
 
-  // ignore: lines_longer_than_80_chars
-  final _logdata = LogData(
-      name: 'testname', room: '201', timestamp: DateTime.now().toString());
-
   /// submitData
-  void submitData() async {
+  void submitData(num roomId) async {
+    var room;
+    if (roomId == 0) {
+      room = '202';
+    } else {
+      room = '201';
+    }
+    final _logdata = LogData(
+        name: '$name', room: '$room', timestamp: DateTime.now().toString());
     await _sheet.submitDataToSheet(_logdata, print);
   }
 

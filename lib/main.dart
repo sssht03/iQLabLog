@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:iQLabLog/ui/splash/splash_view.dart';
 import 'service/navigation.dart';
 
 import 'service_locator.dart';
@@ -32,7 +33,8 @@ class MyApp extends StatelessWidget {
       navigatorKey: _navigation.navigatorKey,
       initialRoute: '/',
       routes: {
-        '/': (context) => NameInputView(),
+        '/': (context) => SplashView(),
+        '/name_input': (context) => NameInputView(),
         '/beacon': (context) => BeaconView(),
       },
     );

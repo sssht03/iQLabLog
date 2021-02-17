@@ -8,8 +8,9 @@ class DialogService {
   final _navigation = servicesLocator<NavigationService>();
 
   /// ShowAlertDialog
-  void showAlertDialog(String title, String body, Function okAction) {
-    showDialog(
+  Future<void> showAlertDialog(
+      String title, String body, Function okAction) async {
+    await showDialog(
       context: _navigation.currentContext,
       builder: (_) {
         return AlertDialog(

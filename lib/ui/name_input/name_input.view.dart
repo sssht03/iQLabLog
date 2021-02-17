@@ -8,7 +8,10 @@ class NameInputView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<NameInputViewModel>.reactive(
-        builder: (context, model, child) => Scaffold(body: _NameInputScreen()),
+        builder: (context, model, child) => Scaffold(
+            body: model.isBusy
+                ? CircularProgressIndicator()
+                : _NameInputScreen()),
         viewModelBuilder: () => NameInputViewModel());
   }
 }
@@ -22,7 +25,7 @@ class _NameInputScreen extends ViewModelWidget<NameInputViewModel> {
         children: [
           Text(
             '名前を入力してね\n(誰かわかれば何でもいい)',
-            style: TextStyle(color: Colors.black87, fontSize: 16.0),
+            style: TextStyle(color: Colors.black45, fontSize: 20.0),
             textAlign: TextAlign.center,
           ),
           SizedBox(

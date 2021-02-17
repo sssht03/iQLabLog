@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 
 import 'service/dialog.dart';
 import 'service/local_notification.dart';
+import 'service/local_storage.dart';
 import 'service/location_permission.dart';
 import 'service/navigation.dart';
 import 'service/sheet.dart';
@@ -19,4 +20,5 @@ void setupServiceLocator() {
   servicesLocator.registerLazySingleton(() => LocationPermissionService());
   servicesLocator.registerLazySingleton(() => DialogService());
   servicesLocator.registerLazySingleton(() => SheetService());
+  servicesLocator.registerLazySingleton(() => LocalStorageService());
 }
