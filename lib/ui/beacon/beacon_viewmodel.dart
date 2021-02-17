@@ -70,6 +70,10 @@ class BeaconViewModel extends BaseViewModel
   String get room => _room;
   String _room;
 
+  /// sending
+  bool get sending => _sending;
+  bool _sending = false;
+
   /// initialize
   void initialize() async {
     print('initialize');
@@ -204,6 +208,8 @@ class BeaconViewModel extends BaseViewModel
 
   /// submitData
   void submitData() async {
+    _sending = true;
+    notifyListeners();
     if (room == null) {
       _flushbar.showFlushbar('スキャンされていません', Colors.redAccent);
     } else {
@@ -211,6 +217,8 @@ class BeaconViewModel extends BaseViewModel
           name: '$name', room: '$room', timestamp: DateTime.now().toString());
       await _sheet.submitDataToSheet(_logdata, print);
     }
+    _sending = false;
+    notifyListeners();
   }
 
   @override

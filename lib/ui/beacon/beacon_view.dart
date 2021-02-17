@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:stacked/stacked.dart';
 
 import 'beacon_viewmodel.dart';
@@ -90,23 +91,29 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
             ),
           ],
         ),
-        body: Container(
-            padding: EdgeInsets.all(16.0),
-            child: Center(
-              child: Column(
-                // mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(height: 56.0),
-                  _RecordButton(),
-                  SizedBox(height: 36.0),
-                  _ScanButton(),
-                  SizedBox(height: 36.0),
-                  _CancelButton(),
-                  SizedBox(height: 36.0),
-                  if (model.scanning && model.onTap) CircularProgressIndicator()
-                ],
-              ),
-            )));
+        body: model.sending
+            ? SpinKitPulse(
+                color: Theme.of(context).primaryColor,
+                size: 150,
+              )
+            : Container(
+                padding: EdgeInsets.all(16.0),
+                child: Center(
+                  child: Column(
+                    // mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 56.0),
+                      _RecordButton(),
+                      SizedBox(height: 36.0),
+                      _ScanButton(),
+                      SizedBox(height: 36.0),
+                      _CancelButton(),
+                      SizedBox(height: 36.0),
+                      if (model.scanning && model.onTap)
+                        CircularProgressIndicator()
+                    ],
+                  ),
+                )));
   }
 }
 

@@ -1,6 +1,6 @@
 import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
-import 'package:iQLabLog/service_locator.dart';
+import '../service_locator.dart';
 
 import 'navigation.dart';
 import 'size.dart';
