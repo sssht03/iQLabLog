@@ -166,8 +166,8 @@ class BeaconViewModel extends BaseViewModel
         notifyListeners();
         _beacons.sort(_compareParameters);
         print(_beacons);
-        var uuid = _beacons[0].proximityUUID;
         for (var i = 0; i < _beacons.length; i++) {
+          var uuid = _beacons[i].proximityUUID;
           if (regions[0].proximityUUID.contains(uuid) &&
               _beacons[i].proximity == Proximity.immediate &&
               _beacons[i].accuracy < 0.15) {
@@ -176,7 +176,7 @@ class BeaconViewModel extends BaseViewModel
           } else if (regions[1].proximityUUID.contains(uuid) &&
               (_beacons[i].proximity == Proximity.immediate ||
                   _beacons[i].proximity == Proximity.near) &&
-              _beacons[i].accuracy < 2.0) {
+              _beacons[i].accuracy < 4.0) {
             _room = '201';
             await pauseScanBeacon();
           }
