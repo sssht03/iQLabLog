@@ -217,6 +217,9 @@ class BeaconViewModel extends BaseViewModel
           name: '$name', room: '$room', timestamp: DateTime.now().toString());
       await _sheet.submitDataToSheet(_logdata, print);
     }
+    // final _logdata = LogData(
+    //     name: '$name', room: '202', timestamp: DateTime.now().toString());
+    // await _sheet.submitDataToSheet(_logdata, print);
     _sending = false;
     notifyListeners();
   }

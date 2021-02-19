@@ -13,7 +13,7 @@ class SheetService {
 
   /// API URL
   static const String url =
-      "https://script.google.com/macros/s/AKfycbzJ6EYxFsd8m41KTrOw9QMUmPZCGn3ZiRLJwbu-s5u6TJIaJyjaI8DO/exec";
+      "https://script.google.com/macros/s/AKfycbx3ZRcXarVt7btXFiw8oYpHsr1nYxBlCIH4Ibk50sbrjsdv-Oy8FFaFCg/exec";
 
   /// status_success
   static const String statusSuccess = "SUCCESS";
@@ -27,10 +27,17 @@ class SheetService {
           var url = response.headers['location'];
           await http.get(url).then((response) {
             callback(convert.jsonDecode(response.body)['status']);
-            _flushbar.showFlushbar('データを記録しました', Colors.blueAccent);
+            var result = convert.jsonDecode(response.body)['status'];
+            if (result == 'SUCCESS') {
+              _flushbar.showFlushbar('データを記録しました', Colors.blueAccent);
+            } else {
+              print('302 and error');
+              _flushbar.showFlushbar(
+                  '送信に失敗しました。もう一度試してください。', Colors.redAccent);
+            }
           });
         } else {
-          callback(convert.jsonDecode(response.body)['status']);
+          callback(convert.jsonDecode(response.body)['message']);
           _flushbar.showFlushbar('送信に失敗しました。もう一度試してください。', Colors.redAccent);
         }
       });

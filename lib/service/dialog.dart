@@ -27,7 +27,7 @@ class DialogService {
             FlatButton(
               child: Text(
                 "OK",
-                style: TextStyle(color: Colors.grey),
+                style: TextStyle(color: Colors.blueAccent),
               ),
               onPressed: okAction,
             ),

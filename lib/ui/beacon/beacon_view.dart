@@ -102,7 +102,7 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
                   child: Column(
                     // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: 56.0),
+                      SizedBox(height: 48.0),
                       _RecordButton(),
                       SizedBox(height: 36.0),
                       _ScanButton(),
