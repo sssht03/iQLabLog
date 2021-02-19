@@ -8,6 +8,7 @@ import '../../model/logdata.dart';
 import '../../service/flushbar.dart';
 import '../../service/local_notification.dart';
 import '../../service/local_storage.dart';
+import '../../service/navigation.dart';
 import '../../service/sheet.dart';
 import '../../service_locator.dart';
 
@@ -20,6 +21,7 @@ class BeaconViewModel extends BaseViewModel
   final _sheet = servicesLocator<SheetService>();
   final _localStorage = servicesLocator<LocalStorageService>();
   final _flushbar = servicesLocator<FlushBarService>();
+  final _navigation = servicesLocator<NavigationService>();
 
   /// streamController
   final StreamController streamController = StreamController();
@@ -222,6 +224,11 @@ class BeaconViewModel extends BaseViewModel
     // await _sheet.submitDataToSheet(_logdata, print);
     _sending = false;
     notifyListeners();
+  }
+
+  /// rename
+  void rename() {
+    _navigation.pushNamed(routeName: '/name_input');
   }
 
   @override

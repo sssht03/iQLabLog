@@ -30,4 +30,9 @@ class NameInputViewModel extends BaseViewModel {
       _navigation.pushNamedAndRemoveUntil(routeName: '/beacon');
     });
   }
+
+  /// fixName
+  void fixName() {
+    _navigation.pushNamedAndRemoveUntil(routeName: '/beacon');
+  }
 }

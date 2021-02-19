@@ -74,7 +74,7 @@ class _Okbutton extends ViewModelWidget<NameInputViewModel> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           color: Theme.of(context).primaryColor,
-          onPressed: () => {model.showCheckDialog()},
+          onPressed: () => {model.fixName()},
         ));
   }
 }

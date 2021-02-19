@@ -109,6 +109,8 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
                       SizedBox(height: 36.0),
                       _CancelButton(),
                       SizedBox(height: 36.0),
+                      _ReNameButton(),
+                      SizedBox(height: 36.0),
                       if (model.scanning && model.onTap)
                         CircularProgressIndicator()
                     ],
@@ -208,6 +210,26 @@ class _CancelButton extends ViewModelWidget<BeaconViewModel> {
             await model.pauseScanBeacon();
             model.scanning = false;
             model.onTap = false;
+          },
+        ));
+  }
+}
+
+class _ReNameButton extends ViewModelWidget<BeaconViewModel> {
+  @override
+  Widget build(BuildContext context, BeaconViewModel model) {
+    return Container(
+        width: 150,
+        height: 50,
+        child: RaisedButton(
+          elevation: 5,
+          shape: StadiumBorder(),
+          child: Text(
+            '名前を変更する',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          onPressed: () {
+            model.rename();
           },
         ));
   }
