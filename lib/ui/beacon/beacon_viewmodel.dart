@@ -83,6 +83,7 @@ class BeaconViewModel extends BaseViewModel
     _localNotification.initLocalNotification();
     WidgetsBinding.instance.addObserver(this);
     _name = await _localStorage.getUserName();
+    _room = null;
     notifyListeners();
   }
 
@@ -171,8 +172,9 @@ class BeaconViewModel extends BaseViewModel
         for (var i = 0; i < _beacons.length; i++) {
           var uuid = _beacons[i].proximityUUID;
           if (regions[0].proximityUUID.contains(uuid) &&
-              _beacons[i].proximity == Proximity.immediate &&
-              _beacons[i].accuracy < 0.15) {
+              (_beacons[i].proximity == Proximity.immediate ||
+                  _beacons[i].proximity == Proximity.near) &&
+              _beacons[i].accuracy < 1.5) {
             _room = '202';
             await pauseScanBeacon();
           } else if (regions[1].proximityUUID.contains(uuid) &&

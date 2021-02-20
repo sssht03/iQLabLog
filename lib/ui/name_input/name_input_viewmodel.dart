@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
 
 import '../../service/dialog.dart';
@@ -21,18 +22,26 @@ class NameInputViewModel extends BaseViewModel {
     notifyListeners();
   }
 
+  /// showNullDialog
+  void showNullDialog() async {
+    await _dialog.showAlertDialog('NULL ERROR', '名前を入力してください', _navigation.pop);
+  }
+
   /// showCheckDialog
-  void showCheckDialog() async {
-    await _dialog.showAlertDialog('確認: $text', '変更できないよ\n機能作るのサボりました',
-        () async {
-      print(text);
+  void showCheckDialig() async {
+    await _dialog.showAlertDialog(
+        '確認: $text', '以上の名前で登録します。\n新規に登録、名前を変更する場合は松尾まで連絡ください。', () async {
       await _lcoalStorage.storeUserName(text);
       _navigation.pushNamedAndRemoveUntil(routeName: '/beacon');
     });
   }
 
   /// fixName
-  void fixName() {
-    _navigation.pushNamedAndRemoveUntil(routeName: '/beacon');
+  void fixName() async {
+    if (text == null) {
+      await showNullDialog();
+    } else {
+      await showCheckDialig();
+    }
   }
 }

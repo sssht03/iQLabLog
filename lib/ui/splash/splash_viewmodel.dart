@@ -13,7 +13,9 @@ class SplashViewModel extends BaseViewModel {
   void initialize() async {
     final name = await _localStorage.getUserName();
     print(name);
+    print(name == null);
     await Future.delayed(Duration(milliseconds: 1200));
+
     if (name != null) {
       _navigation.pushAndReplace(routeName: '/beacon');
     } else {

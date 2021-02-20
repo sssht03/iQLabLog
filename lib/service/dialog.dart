@@ -12,7 +12,7 @@ class DialogService {
       String title, String body, Function okAction) async {
     await showDialog(
       context: _navigation.currentContext,
-      builder: (_) {
+      builder: (context) {
         return AlertDialog(
           title: Text(title),
           content: Text(body),
@@ -22,7 +22,7 @@ class DialogService {
                 "Cancel",
                 style: TextStyle(color: Colors.redAccent),
               ),
-              onPressed: () => Navigator.pop(_navigation.currentContext),
+              onPressed: () => Navigator.pop(context),
             ),
             FlatButton(
               child: Text(

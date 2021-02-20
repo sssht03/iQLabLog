@@ -74,7 +74,9 @@ class _Okbutton extends ViewModelWidget<NameInputViewModel> {
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           color: Theme.of(context).primaryColor,
-          onPressed: () => {model.fixName()},
+          onPressed: () async {
+            await model.fixName();
+          },
         ));
   }
 }

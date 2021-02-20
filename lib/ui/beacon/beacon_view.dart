@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -100,22 +101,74 @@ class _BeaconScreen extends ViewModelWidget<BeaconViewModel> {
                 padding: EdgeInsets.all(16.0),
                 child: Center(
                   child: Column(
-                    // mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: 48.0),
-                      _RecordButton(),
                       SizedBox(height: 36.0),
-                      _ScanButton(),
-                      SizedBox(height: 36.0),
-                      _CancelButton(),
-                      SizedBox(height: 36.0),
-                      _ReNameButton(),
-                      SizedBox(height: 36.0),
+                      _HelloText(),
+                      SizedBox(height: 20.0),
+                      _BeaconText(),
+                      if (model.room != null) _RecordButton(),
+                      SizedBox(height: 28.0),
+                      if (!model.scanning) _ScanButton(),
+                      SizedBox(height: 28.0),
+                      if (model.scanning) _CancelButton(),
+                      if (model.scanning) SizedBox(height: 28.0),
+                      if (!model.scanning) _ReNameButton(),
+                      SizedBox(height: 28.0),
                       if (model.scanning && model.onTap)
                         CircularProgressIndicator()
                     ],
                   ),
                 )));
+  }
+}
+
+/// _HelloText
+class _HelloText extends ViewModelWidget<BeaconViewModel> {
+  @override
+  Widget build(BuildContext context, BeaconViewModel model) {
+    return Center(
+      child: Text('Hello ${model.name}!',
+          style: TextStyle(
+              fontSize: 36.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87)),
+    );
+  }
+}
+
+/// BeaconText
+class _BeaconText extends ViewModelWidget<BeaconViewModel> {
+  @override
+  Widget build(BuildContext context, BeaconViewModel model) {
+    return Column(children: [
+      SizedBox(height: 8.0),
+      (model.room == null)
+          ? Text(
+              'Beacon \nNot Found',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 36.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.redAccent),
+            )
+          : Column(
+              children: [
+                Text(
+                  'room',
+                  style: TextStyle(fontSize: 24.0, color: Colors.black54),
+                ),
+                Text(
+                  model.room,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontSize: 56.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87),
+                ),
+              ],
+            ),
+      SizedBox(height: 20.0),
+    ]);
   }
 }
 
@@ -144,51 +197,20 @@ class _RecordButton extends ViewModelWidget<BeaconViewModel> {
   @override
   Widget build(BuildContext context, BeaconViewModel model) {
     return Container(
-      child: Column(
-        children: [
-          if (model.room != null)
-            Text(
-              'room',
-              style: TextStyle(fontSize: 24.0, color: Colors.black54),
-            ),
-          SizedBox(height: 8.0),
-          (model.room == null)
-              ? Text(
-                  'Beacon \nNot Found',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 40.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87),
-                )
-              : Text(
-                  model.room,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 56.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87),
-                ),
-          SizedBox(height: 36.0),
-          Container(
-              width: 150,
-              height: 50,
-              child: RaisedButton(
-                elevation: 5,
-                shape: StadiumBorder(),
-                child: Text(
-                  '記録送信',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-                color: Theme.of(context).primaryColor,
-                onPressed: () async {
-                  await model.submitData();
-                },
-              ))
-        ],
-      ),
-    );
+        width: 150,
+        height: 50,
+        child: RaisedButton(
+          elevation: 5,
+          shape: StadiumBorder(),
+          child: Text(
+            '記録送信',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          color: Theme.of(context).primaryColor,
+          onPressed: () async {
+            await model.submitData();
+          },
+        ));
   }
 }
 
@@ -204,7 +226,8 @@ class _CancelButton extends ViewModelWidget<BeaconViewModel> {
           shape: StadiumBorder(),
           child: Text(
             'スキャンをやめる',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style:
+                TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
           ),
           onPressed: () async {
             await model.pauseScanBeacon();
@@ -226,7 +249,8 @@ class _ReNameButton extends ViewModelWidget<BeaconViewModel> {
           shape: StadiumBorder(),
           child: Text(
             '名前を変更する',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style:
+                TextStyle(color: Colors.black54, fontWeight: FontWeight.bold),
           ),
           onPressed: () {
             model.rename();
